@@ -1,0 +1,13 @@
+# netlify.toml
+
+[[headers]]
+  # Cache control for all URLs
+  for = "/*"
+    [headers.values]
+    Cache-Control = "max-age=0, no-cache, no-store, must-revalidate"
+
+[[headers]]
+  # Disable caching for service worker
+  for = "/service-worker.js"
+    [headers.values]
+    Cache-Control = "no-cache"
