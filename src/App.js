@@ -1,6 +1,7 @@
 // src/App.js
 import React, { useState, useEffect } from 'react';
 import { addItem, getAllItems, deleteItem } from './db';
+import StickyHeadTable from './components/DataTableComponents';
 
 function App() {
   const [items, setItems] = useState([]);
@@ -31,10 +32,10 @@ function App() {
   return (
     <div>
       <h1>PWA with IndexedDB</h1>
-      <input 
-        type="text" 
-        value={inputValue} 
-        onChange={(e) => setInputValue(e.target.value)} 
+      <input
+        type="text"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
       />
       <button onClick={handleAddItem}>Add Item</button>
       <ul>
@@ -44,6 +45,10 @@ function App() {
           </li>
         ))}
       </ul>
+      <div className="App">
+        <h1>Data Table</h1>
+        <StickyHeadTable />
+      </div>
     </div>
   );
 }
