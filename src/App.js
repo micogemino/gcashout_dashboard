@@ -34,9 +34,12 @@ function App() {
   };
 
   const handleDeleteItem = async (id) => {
-    await deleteItem(id);
-    const allItems = await getAllItems();
-    setItems(allItems);
+    const isConfirmed = window.confirm('Are you sure you want to delete this item with id ' + id + '?');
+    if (isConfirmed) {
+      await deleteItem(id);
+      const allItems = await getAllItems();
+      setItems(allItems);
+    }
   };
 
   const handleExport = () => {
