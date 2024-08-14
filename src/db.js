@@ -11,21 +11,21 @@ const dbPromise = openDB('gcash-database', 1, {
   },
 });
 
-export const addItem = async (ref, amount) => {
+export const addItem = async (ref, amount, created = null) => {
   const db = await dbPromise;
-  // Get the current date and time in local timezone
   const now = new Date();
   const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+  const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
   const hours = String(now.getHours()).padStart(2, '0');
   const minutes = String(now.getMinutes()).padStart(2, '0');
   const seconds = String(now.getSeconds()).padStart(2, '0');
 
-  // Format the date and time as Y-m-d H:i:s
-  const created = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  // Use the provided created date, or generate the current one
+  const createdDate = created || `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
   try {
-    await db.add('gcashCashouts', { reference_number: ref, amount: amount, created: created });
+    await db.add('gcashCashouts', { reference_number: ref, amount: amount, created: createdDate });
   } catch (error) {
     if (error.name === 'ConstraintError') {
       console.error('Reference number must be unique.');

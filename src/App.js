@@ -5,6 +5,7 @@ import * as XLSX from 'xlsx';
 import Button from '@mui/material/Button';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 
 function App() {
   const [items, setItems] = useState([]);
@@ -25,7 +26,7 @@ function App() {
       setError('All fields are required');
       return;
     }
-    setError('');  // Clear any existing error
+    setError(''); // Clear any existing error
     await addItem(inputRef, inputAmount);
     const allItems = await getAllItems();
     setItems(allItems);
@@ -63,6 +64,29 @@ function App() {
 
     // Generate the Excel file and trigger a download
     XLSX.writeFile(workbook, 'gcash_cashouts.xlsx');
+  };
+
+  const handleImport = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+        jsonData.forEach(async (item) => {
+          const { reference_number, amount, created } = item;
+          await addItem(reference_number, amount, created);
+        });
+
+        // Reload items after import
+        getAllItems().then(setItems);
+      };
+      reader.readAsArrayBuffer(file);
+    }
   };
 
   return (
@@ -103,6 +127,27 @@ function App() {
         >
           Export to Excel
         </Button>
+
+        {/* Import Button */}
+        <input
+          type="file"
+          accept=".xlsx, .xls"
+          onChange={handleImport}
+          style={{ display: 'none' }}
+          id="import-button"
+        />
+        <label htmlFor="import-button">
+          <Button
+            component="span"
+            size="small"
+            variant="contained"
+            startIcon={<FileUploadIcon />}
+            style={{ marginRight: '10px' }} // Add space to the right of the button
+          >
+            Import from Excel
+          </Button>
+        </label>
+
         <StickyHeadTable rows={items} onDelete={handleDeleteItem} />
       </div>
     </div>
