@@ -1,4 +1,4 @@
-const CACHE_NAME = 'my-pwa-cache-v1';
+const CACHE_NAME = 'my-pwa-cache-v2';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -53,7 +53,6 @@ self.addEventListener('fetch', event => {
 });
 
 self.addEventListener('activate', event => {
-  // Clean up old caches if necessary
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then(cacheNames => {
@@ -66,4 +65,5 @@ self.addEventListener('activate', event => {
       );
     })
   );
+  return self.clients.claim();  // Take control of open clients immediately
 });
