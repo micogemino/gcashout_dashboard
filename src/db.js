@@ -1,17 +1,19 @@
 import { openDB } from 'idb';
 
-const dbPromise = openDB('gcash-database', 1, {
+const dbPromise = openDB('gcash-database', 1.1, {
   upgrade(db) {
     if (!db.objectStoreNames.contains('gcashCashouts')) {
       const store = db.createObjectStore('gcashCashouts', { keyPath: 'id', autoIncrement: true });
       store.createIndex('reference_number', 'reference_number', { unique: true });
       store.createIndex('amount', 'amount', { unique: false });
+      store.createIndex('receiver_name', 'receiver_name', { unique: false });
       store.createIndex('created', 'created', { unique: false });
+      store.createIndex('image', 'image', { unique: false }); // New Image Index
     }
   },
 });
 
-export const addItem = async (ref, amount, created = null) => {
+export const addItem = async (ref, amount, created = null, receiver_name, image) => {
   const db = await dbPromise;
   const now = new Date();
   const year = now.getFullYear();
@@ -25,7 +27,7 @@ export const addItem = async (ref, amount, created = null) => {
   const createdDate = created || `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
   try {
-    await db.add('gcashCashouts', { reference_number: ref, amount: amount, created: createdDate });
+    await db.add('gcashCashouts', { reference_number: ref, amount: amount, created: createdDate, receiver_name: receiver_name, image: image });
   } catch (error) {
     if (error.name === 'ConstraintError') {
       console.error('Reference number must be unique.');
