@@ -32,7 +32,7 @@ const handleDeleteClick = (id) => {
   };
 
   const handleDeleteConfirm = async () => {
-    const db = await openDB('gcash-database', 1);
+    const db = await openDB('gcash-database');
     await db.delete('gcashCashouts', deleteId);
     setRows((prevRows) => prevRows.filter((row) => row.id !== deleteId));
     setDeleteDialogOpen(false);
