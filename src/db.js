@@ -1,6 +1,6 @@
 import { openDB } from 'idb';
 
-const dbPromise = openDB('gcash-database', 1, {
+const dbPromise = openDB('gcash-database', 2, {
   upgrade(db) {
     if (!db.objectStoreNames.contains('gcashCashouts')) {
       const store = db.createObjectStore('gcashCashouts', { keyPath: 'id', autoIncrement: true });
